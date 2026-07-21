@@ -1,4 +1,8 @@
-"""Define REST API views and supporting functions."""
+﻿"""REST API views for articles, newsletters, publishers, and users.
+
+This module also handles editor approval, subscriber email notifications,
+and approved article logging.
+""""""Define REST API views and supporting functions."""
 import requests
 
 from django.conf import settings
@@ -351,4 +355,5 @@ class ApprovedArticleLogViewSet(
             serializer.data,
             status=response_status,
         )
+
 
