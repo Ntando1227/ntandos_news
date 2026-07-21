@@ -1,4 +1,4 @@
-"""Serializers for the Ntando's News REST API."""
+﻿"""Serializers for converting news application models to API data.""""""Serializers for the Ntando's News REST API."""
 
 from rest_framework import serializers
 
@@ -247,3 +247,4 @@ class ApprovedArticleLogSerializer(serializers.ModelSerializer):
             "id",
             "approved_at",
         ]
+
