@@ -1,0 +1,15 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Create Newsletter{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Create Newsletter</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Newsletter</button>
+    </form>
+</div>
+{% endblock %}

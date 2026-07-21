@@ -1,0 +1,103 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}
+Manage Subscriptions
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Manage Subscriptions</h1>
+    <p>
+        Follow publishers and journalists to create your
+        personalised news feed.
+    </p>
+</section>
+
+<section>
+    <h2>Publishers</h2>
+
+    <div class="grid">
+        {% for publisher in publishers %}
+            <article class="card">
+                <h3>{{ publisher.name }}</h3>
+
+                <p>
+                    {{ publisher.description|default:"No description available." }}
+                </p>
+
+                {% if publisher in user.subscribed_publishers.all %}
+                    <p class="subscription-status">
+                        Subscribed
+                    </p>
+
+                    <form
+                        method="post"
+                        action="{% url 'unsubscribe_publisher' publisher.id %}"
+                    >
+                        {% csrf_token %}
+                        <button type="submit">
+                            Unsubscribe
+                        </button>
+                    </form>
+                {% else %}
+                    <form
+                        method="post"
+                        action="{% url 'subscribe_publisher' publisher.id %}"
+                    >
+                        {% csrf_token %}
+                        <button type="submit">
+                            Subscribe
+                        </button>
+                    </form>
+                {% endif %}
+            </article>
+        {% empty %}
+            <p>No publishers are available.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <h2>Journalists</h2>
+
+    <div class="grid">
+        {% for journalist in journalists %}
+            <article class="card">
+                <h3>{{ journalist.username }}</h3>
+
+                <p>
+                    {{ journalist.email|default:"Independent journalist" }}
+                </p>
+
+                {% if journalist in user.subscribed_journalists.all %}
+                    <p class="subscription-status">
+                        Subscribed
+                    </p>
+
+                    <form
+                        method="post"
+                        action="{% url 'unsubscribe_journalist' journalist.id %}"
+                    >
+                        {% csrf_token %}
+                        <button type="submit">
+                            Unsubscribe
+                        </button>
+                    </form>
+                {% else %}
+                    <form
+                        method="post"
+                        action="{% url 'subscribe_journalist' journalist.id %}"
+                    >
+                        {% csrf_token %}
+                        <button type="submit">
+                            Subscribe
+                        </button>
+                    </form>
+                {% endif %}
+            </article>
+        {% empty %}
+            <p>No journalists are available.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

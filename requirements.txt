@@ -1,0 +1,6 @@
+﻿Django>=5.2
+djangorestframework
+djangorestframework-simplejwt
+PyMySQL
+python-dotenv
+requests

@@ -1,0 +1,57 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Home | Ntando's News{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Ntando's News</h1>
+    <p>Independent journalism, trusted publications and curated newsletters.</p>
+</section>
+
+<section>
+    <h2>Latest Articles</h2>
+
+    <div class="grid">
+        {% for article in articles %}
+            <article class="card">
+                <h3>
+                    <a href="{% url 'article_detail' article.id %}">
+                        {{ article.title }}
+                    </a>
+                </h3>
+
+                <p>
+                    By {{ article.author.username }}
+                    {% if article.publisher %}
+                        for {{ article.publisher.name }}
+                    {% else %}
+                        independently
+                    {% endif %}
+                </p>
+
+                <p>{{ article.content|truncatewords:35 }}</p>
+                <small>{{ article.created_at|date:"d M Y H:i" }}</small>
+            </article>
+        {% empty %}
+            <p>No approved articles are available yet.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <h2>Newsletters</h2>
+
+    <div class="grid">
+        {% for newsletter in newsletters %}
+            <article class="card">
+                <h3>{{ newsletter.title }}</h3>
+                <p>{{ newsletter.description }}</p>
+                <p>Created by {{ newsletter.author.username }}</p>
+                <p>{{ newsletter.articles.count }} article{{ newsletter.articles.count|pluralize }}</p>
+            </article>
+        {% empty %}
+            <p>No newsletters are available yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

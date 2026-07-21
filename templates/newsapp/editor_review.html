@@ -1,0 +1,28 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Editor Review{% endblock %}
+
+{% block content %}
+<h1>Articles Awaiting Approval</h1>
+
+<div class="grid">
+    {% for article in articles %}
+        <article class="card">
+            <h2>{{ article.title }}</h2>
+            <p>By {{ article.author.username }}</p>
+            <p>{{ article.content|truncatewords:45 }}</p>
+
+            <a class="button" href="{% url 'article_detail' article.id %}">
+                Read Article
+            </a>
+
+            <form method="post" action="{% url 'approve_article' article.id %}">
+                {% csrf_token %}
+                <button type="submit">Approve Article</button>
+            </form>
+        </article>
+    {% empty %}
+        <p>There are no articles awaiting approval.</p>
+    {% endfor %}
+</div>
+{% endblock %}

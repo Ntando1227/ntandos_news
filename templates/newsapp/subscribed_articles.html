@@ -1,0 +1,70 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}
+My News
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>My News</h1>
+    <p>
+        Approved articles from the publishers and journalists
+        you follow.
+    </p>
+
+    <a
+        class="button"
+        href="{% url 'manage_subscriptions' %}"
+    >
+        Manage Subscriptions
+    </a>
+</section>
+
+<section>
+    <div class="grid">
+        {% for article in articles %}
+            <article class="card">
+                <h2>
+                    <a href="{% url 'article_detail' article.id %}">
+                        {{ article.title }}
+                    </a>
+                </h2>
+
+                <p>
+                    By {{ article.author.username }}
+
+                    {% if article.publisher %}
+                        for {{ article.publisher.name }}
+                    {% else %}
+                        independently
+                    {% endif %}
+                </p>
+
+                <p>
+                    {{ article.content|truncatewords:40 }}
+                </p>
+
+                <small>
+                    {{ article.created_at|date:"d M Y H:i" }}
+                </small>
+            </article>
+        {% empty %}
+            <article class="card">
+                <h2>No subscribed articles yet</h2>
+
+                <p>
+                    Subscribe to a publisher or journalist to
+                    build your personalised news feed.
+                </p>
+
+                <a
+                    class="button"
+                    href="{% url 'manage_subscriptions' %}"
+                >
+                    Browse Subscriptions
+                </a>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
