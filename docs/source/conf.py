@@ -7,9 +7,10 @@ sys.path.insert(
     os.path.abspath('../..')
 )
 
-os.environ[
-    'DJANGO_SETTINGS_MODULE'
-] = 'ntandos_news.settings'
+os.environ.setdefault(
+    'DJANGO_SETTINGS_MODULE',
+    'ntandos_news.settings'
+)
 
 django.setup()
 
@@ -29,3 +30,6 @@ exclude_patterns = []
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+
+autodoc_preserve_defaults = True
+autodoc_member_order = 'bysource'
