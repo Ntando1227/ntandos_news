@@ -1,4 +1,8 @@
-"""Define template-based views for the news application."""
+﻿"""Web views for the Ntando's News application.
+
+The views in this module support registration, article management,
+editor review, newsletters, and reader subscriptions.
+""""""Define template-based views for the news application."""
 from functools import wraps
 
 from django.contrib import messages
@@ -488,4 +492,5 @@ def subscribed_articles(request):
         'newsapp/subscribed_articles.html',
         {'articles': articles},
     )
+
 
