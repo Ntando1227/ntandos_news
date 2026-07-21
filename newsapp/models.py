@@ -1,4 +1,8 @@
-"""Define database models for the news application."""
+﻿"""Database models for the Ntando's News application.
+
+This module defines users, publishers, articles, newsletters,
+and approved article records.
+""""""Define database models for the news application."""
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -124,3 +128,4 @@ class ApprovedArticleLog(models.Model):
     def __str__(self):
         """Return a readable string representation."""
         return self.title
+
