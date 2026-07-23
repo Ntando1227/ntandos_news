@@ -23,10 +23,17 @@ nav {
     gap: 20px;
 }
 
+.navigation-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
 nav a {
-    color: white;
+    color: #ffffff;
     text-decoration: none;
-    margin-right: 14px;
+    margin-right: 10px;
 }
 
 .brand {
@@ -40,7 +47,7 @@ main {
 }
 
 .hero {
-    background: white;
+    background: #ffffff;
     padding: 50px 30px;
     border-radius: 12px;
     margin-bottom: 35px;
@@ -53,20 +60,23 @@ main {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(270px, 1fr)
+    );
     gap: 22px;
 }
 
 .card,
 .form-container,
 .article-page {
-    background: white;
+    background: #ffffff;
     padding: 24px;
     border-radius: 10px;
     box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
 }
 
-.card a {
+.card a:not(.button) {
     color: #10233f;
 }
 
@@ -80,6 +90,10 @@ textarea {
     border-radius: 5px;
 }
 
+input[type="checkbox"] {
+    width: auto;
+}
+
 button,
 .button {
     display: inline-block;
@@ -88,9 +102,25 @@ button,
     border: 0;
     border-radius: 5px;
     background: #10233f;
-    color: white;
+    color: #ffffff !important;
     text-decoration: none;
     cursor: pointer;
+    font-weight: 600;
+}
+
+button:hover,
+.button:hover {
+    opacity: 0.9;
+}
+
+.secondary-button {
+    background: #4d6078;
+    color: #ffffff !important;
+}
+
+.danger-button {
+    background: #a61b1b;
+    color: #ffffff !important;
 }
 
 .inline-form {
@@ -98,8 +128,15 @@ button,
 }
 
 .inline-form button {
-    margin: 0;
-    padding: 7px 12px;
+    margin: 10px 0 0;
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
 }
 
 .message {
@@ -109,11 +146,22 @@ button,
     background: #e7eef8;
 }
 
+.message.success {
+    background: #e3f4e7;
+}
+
+.message.warning {
+    background: #fff2ce;
+}
+
+.message.error {
+    background: #f8dddd;
+}
+
 .article-content {
     margin: 30px 0;
     line-height: 1.7;
 }
-
 
 .subscription-status {
     display: inline-block;
@@ -121,4 +169,19 @@ button,
     border-radius: 20px;
     background: #e7eef8;
     font-weight: bold;
+}
+
+ul {
+    padding-left: 22px;
+}
+
+@media (max-width: 760px) {
+    nav {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
 }

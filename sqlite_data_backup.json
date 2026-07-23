@@ -1,0 +1,126 @@
+[
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Reader",
+    "permissions": [
+      [
+        "view_article",
+        "newsapp",
+        "article"
+      ],
+      [
+        "view_newsletter",
+        "newsapp",
+        "newsletter"
+      ]
+    ]
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Editor",
+    "permissions": [
+      [
+        "change_article",
+        "newsapp",
+        "article"
+      ],
+      [
+        "delete_article",
+        "newsapp",
+        "article"
+      ],
+      [
+        "view_article",
+        "newsapp",
+        "article"
+      ],
+      [
+        "change_newsletter",
+        "newsapp",
+        "newsletter"
+      ],
+      [
+        "delete_newsletter",
+        "newsapp",
+        "newsletter"
+      ],
+      [
+        "view_newsletter",
+        "newsapp",
+        "newsletter"
+      ]
+    ]
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Journalist",
+    "permissions": [
+      [
+        "add_article",
+        "newsapp",
+        "article"
+      ],
+      [
+        "change_article",
+        "newsapp",
+        "article"
+      ],
+      [
+        "delete_article",
+        "newsapp",
+        "article"
+      ],
+      [
+        "view_article",
+        "newsapp",
+        "article"
+      ],
+      [
+        "add_newsletter",
+        "newsapp",
+        "newsletter"
+      ],
+      [
+        "change_newsletter",
+        "newsapp",
+        "newsletter"
+      ],
+      [
+        "delete_newsletter",
+        "newsapp",
+        "newsletter"
+      ],
+      [
+        "view_newsletter",
+        "newsapp",
+        "newsletter"
+      ]
+    ]
+  }
+},
+{
+  "model": "newsapp.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$WwkAGNzMl8NRTsUFjbLqTm$e3ySRp3izpC6mIyTLeAjw+AjanhymtJ55OOWZodTzas=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "ntando",
+    "first_name": "",
+    "last_name": "",
+    "email": "Ntandonew4@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-07-17T07:00:02.050Z",
+    "role": "reader",
+    "groups": [],
+    "user_permissions": [],
+    "subscribed_publishers": [],
+    "subscribed_journalists": []
+  }
+}
+]

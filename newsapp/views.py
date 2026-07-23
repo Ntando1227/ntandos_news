@@ -1,4 +1,5 @@
-"""Define REST API views and supporting functions."""
+﻿"""REST API views for the Ntando's News application."""
+
 import requests
 
 from django.conf import settings
@@ -7,7 +8,7 @@ from django.db.models import Q
 
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import (
@@ -32,7 +33,6 @@ from .serializers import (
 
 
 def get_article_subscriber_emails(article):
-    """Return article subscriber emails."""
     publisher_subscribers = CustomUser.objects.none()
 
     if article.publisher:
@@ -51,7 +51,9 @@ def get_article_subscriber_emails(article):
     ).distinct()
 
     return list(
-        subscribers.exclude(email='').values_list(
+        subscribers.exclude(
+            email=''
+        ).values_list(
             'email',
             flat=True,
         )
@@ -59,7 +61,6 @@ def get_article_subscriber_emails(article):
 
 
 def email_approved_article(article):
-    """Email approved article."""
     recipient_list = get_article_subscriber_emails(article)
 
     if not recipient_list:
@@ -88,7 +89,6 @@ def email_approved_article(article):
 
 
 def post_article_to_approved_endpoint(request, article):
-    """Post article to approved endpoint."""
     publisher_name = (
         article.publisher.name
         if article.publisher
@@ -110,10 +110,13 @@ def post_article_to_approved_endpoint(request, article):
         response = requests.post(
             endpoint_url,
             json=payload,
-            timeout=5,
+            timeout=10,
         )
+
         response.raise_for_status()
+
         return True
+
     except requests.RequestException:
         ApprovedArticleLog.objects.get_or_create(
             article=article,
@@ -123,16 +126,15 @@ def post_article_to_approved_endpoint(request, article):
                 'publisher': publisher_name,
             },
         )
+
         return False
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    """Provide REST API operations for article."""
     serializer_class = ArticleSerializer
     permission_classes = [ArticleRolePermission]
 
     def get_queryset(self):
-        """Return the queryset available to the current user."""
         user = self.request.user
 
         if not user.is_authenticated:
@@ -151,13 +153,21 @@ class ArticleViewSet(viewsets.ModelViewSet):
                 'publisher',
             )
 
+        if user.role == 'journalist':
+            return Article.objects.filter(
+                Q(approved=True)
+                | Q(author=user)
+            ).distinct().select_related(
+                'author',
+                'publisher',
+            )
+
         return Article.objects.all().select_related(
             'author',
             'publisher',
         )
 
     def perform_create(self, serializer):
-        """Create the resource using request-specific values."""
         serializer.save(
             author=self.request.user,
             approved=False,
@@ -170,7 +180,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
         url_path='subscribed',
     )
     def subscribed(self, request):
-        """Handle subscribed."""
         if request.user.role != 'reader':
             return Response(
                 {
@@ -182,16 +191,17 @@ class ArticleViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        subscribed_publishers = (
-            request.user.subscribed_publishers.all()
-        )
-        subscribed_journalists = (
-            request.user.subscribed_journalists.all()
-        )
-
         articles = Article.objects.filter(
-            Q(publisher__in=subscribed_publishers)
-            | Q(author__in=subscribed_journalists),
+            Q(
+                publisher__in=(
+                    request.user.subscribed_publishers.all()
+                )
+            )
+            | Q(
+                author__in=(
+                    request.user.subscribed_journalists.all()
+                )
+            ),
             approved=True,
         ).distinct().select_related(
             'author',
@@ -212,10 +222,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         url_path='approve',
     )
     def approve(self, request, pk=None):
-        """Handle approve."""
         article = self.get_object()
-
-        self.check_object_permissions(request, article)
 
         if article.approved:
             return Response(
@@ -228,7 +235,10 @@ class ArticleViewSet(viewsets.ModelViewSet):
         article.approved = True
         article.save(update_fields=['approved'])
 
-        emails_sent = email_approved_article(article)
+        try:
+            emails_sent = email_approved_article(article)
+        except Exception:
+            emails_sent = 0
 
         api_post_successful = (
             post_article_to_approved_endpoint(
@@ -251,22 +261,31 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
 
 class NewsletterViewSet(viewsets.ModelViewSet):
-    """Provide REST API operations for newsletter."""
-    queryset = Newsletter.objects.all().select_related(
-        'author'
-    ).prefetch_related(
-        'articles'
-    )
     serializer_class = NewsletterSerializer
     permission_classes = [NewsletterRolePermission]
 
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Newsletter.objects.all().select_related(
+            'author'
+        ).prefetch_related(
+            'articles'
+        )
+
+        if (
+            user.is_authenticated
+            and user.role == 'journalist'
+        ):
+            return queryset.filter(author=user)
+
+        return queryset
+
     def perform_create(self, serializer):
-        """Create the resource using request-specific values."""
         serializer.save(author=self.request.user)
 
 
 class PublisherViewSet(viewsets.ReadOnlyModelViewSet):
-    """Provide REST API operations for publisher."""
     queryset = Publisher.objects.all().prefetch_related(
         'editors',
         'journalists',
@@ -275,20 +294,18 @@ class PublisherViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """Provide REST API operations for user."""
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
 
-class ApprovedArticleLogViewSet(
-    viewsets.ModelViewSet
-):
-    """Provide REST API operations for approved article log."""
+class ApprovedArticleLogViewSet(viewsets.ModelViewSet):
     queryset = ApprovedArticleLog.objects.all().order_by(
         '-approved_at'
     )
     serializer_class = ApprovedArticleLogSerializer
+    permission_classes = [AllowAny]
+    authentication_classes = []
     http_method_names = [
         'get',
         'post',
@@ -297,7 +314,6 @@ class ApprovedArticleLogViewSet(
     ]
 
     def create(self, request, *args, **kwargs):
-        """Create and return a new resource."""
         article_id = request.data.get('article')
 
         try:
@@ -305,6 +321,7 @@ class ApprovedArticleLogViewSet(
                 id=article_id,
                 approved=True,
             )
+
         except Article.DoesNotExist:
             return Response(
                 {
@@ -351,4 +368,3 @@ class ApprovedArticleLogViewSet(
             serializer.data,
             status=response_status,
         )
-
