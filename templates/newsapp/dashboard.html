@@ -1,0 +1,142 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}
+Dashboard | Ntando's News
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>
+        {% if user.role == 'journalist' %}
+            Journalist Dashboard
+        {% else %}
+            Editor Dashboard
+        {% endif %}
+    </h1>
+
+    <p>
+        Manage articles and newsletters from one location.
+    </p>
+
+    <div class="action-row">
+        {% if user.role == 'journalist' %}
+            <a
+                class="button"
+                href="{% url 'article_create' %}"
+            >
+                Create Article
+            </a>
+        {% endif %}
+
+        <a
+            class="button"
+            href="{% url 'newsletter_create' %}"
+        >
+            Create Newsletter
+        </a>
+    </div>
+</section>
+
+<section>
+    <h2>Articles</h2>
+
+    <div class="grid">
+        {% for article in articles %}
+            <article class="card">
+                <h3>{{ article.title }}</h3>
+
+                <p>
+                    Author: {{ article.author.username }}
+                </p>
+
+                <p>
+                    Status:
+                    {% if article.approved %}
+                        <strong>Approved</strong>
+                    {% else %}
+                        <strong>Awaiting approval</strong>
+                    {% endif %}
+                </p>
+
+                {% if article.publisher %}
+                    <p>
+                        Publisher: {{ article.publisher.name }}
+                    </p>
+                {% endif %}
+
+                <div class="action-row">
+                    <a
+                        class="button"
+                        href="{% url 'article_detail' article.id %}"
+                    >
+                        Read Article
+                    </a>
+
+                    <a
+                        class="button secondary-button"
+                        href="{% url 'article_update' article.id %}"
+                    >
+                        Edit
+                    </a>
+
+                    <a
+                        class="button danger-button"
+                        href="{% url 'article_delete' article.id %}"
+                    >
+                        Delete
+                    </a>
+                </div>
+            </article>
+        {% empty %}
+            <article class="card">
+                <p>No articles are available.</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <h2>Newsletters</h2>
+
+    <div class="grid">
+        {% for newsletter in newsletters %}
+            <article class="card">
+                <h3>{{ newsletter.title }}</h3>
+
+                <p>
+                    Author: {{ newsletter.author.username }}
+                </p>
+
+                <p>
+                    {{ newsletter.description }}
+                </p>
+
+                <p>
+                    {{ newsletter.articles.count }}
+                    article{{ newsletter.articles.count|pluralize }}
+                </p>
+
+                <div class="action-row">
+                    <a
+                        class="button secondary-button"
+                        href="{% url 'newsletter_update' newsletter.id %}"
+                    >
+                        Edit
+                    </a>
+
+                    <a
+                        class="button danger-button"
+                        href="{% url 'newsletter_delete' newsletter.id %}"
+                    >
+                        Delete
+                    </a>
+                </div>
+            </article>
+        {% empty %}
+            <article class="card">
+                <p>No newsletters are available.</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

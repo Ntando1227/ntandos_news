@@ -1,16 +1,19 @@
-﻿"""Web views for the Ntando's News application.
+"""Web views for the Ntando's News application."""
 
-The views in this module support registration, article management,
-editor review, newsletters, and reader subscriptions.
-""""""Define template-based views for the news application."""
 from functools import wraps
 
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import ArticleForm, NewsletterForm, RegistrationForm
+from .forms import (
+    ArticleForm,
+    NewsletterForm,
+    PublisherForm,
+    RegistrationForm,
+)
 from .models import Article, CustomUser, Newsletter, Publisher
 from .views import (
     email_approved_article,
@@ -19,12 +22,9 @@ from .views import (
 
 
 def role_required(allowed_roles):
-    """Handle role required."""
     def decorator(view_function):
-        """Handle decorator."""
         @wraps(view_function)
         def wrapped_view(request, *args, **kwargs):
-            """Handle wrapped view."""
             if not request.user.is_authenticated:
                 return redirect('login')
 
@@ -43,7 +43,6 @@ def role_required(allowed_roles):
 
 
 def home(request):
-    """Handle home."""
     articles = Article.objects.filter(
         approved=True
     ).select_related(
@@ -72,7 +71,6 @@ def home(request):
 
 
 def register(request):
-    """Handle register."""
     if request.user.is_authenticated:
         return redirect('home')
 
@@ -99,8 +97,52 @@ def register(request):
     )
 
 
+@login_required
+@role_required(['journalist', 'editor'])
+def dashboard(request):
+    if request.user.role == 'journalist':
+        articles = Article.objects.filter(
+            author=request.user
+        ).select_related(
+            'publisher'
+        ).order_by(
+            '-created_at'
+        )
+
+        newsletters = Newsletter.objects.filter(
+            author=request.user
+        ).prefetch_related(
+            'articles'
+        ).order_by(
+            '-created_at'
+        )
+    else:
+        articles = Article.objects.all().select_related(
+            'author',
+            'publisher',
+        ).order_by(
+            '-created_at'
+        )
+
+        newsletters = Newsletter.objects.all().select_related(
+            'author'
+        ).prefetch_related(
+            'articles'
+        ).order_by(
+            '-created_at'
+        )
+
+    return render(
+        request,
+        'newsapp/dashboard.html',
+        {
+            'articles': articles,
+            'newsletters': newsletters,
+        },
+    )
+
+
 def article_detail(request, article_id):
-    """Handle article detail."""
     article = get_object_or_404(
         Article.objects.select_related(
             'author',
@@ -135,9 +177,8 @@ def article_detail(request, article_id):
 @login_required
 @role_required(['journalist'])
 def article_create(request):
-    """Handle article create."""
     if request.method == 'POST':
-        form = ArticleForm(request.POST, user=request.user)
+        form = ArticleForm(request.POST)
 
         if form.is_valid():
             article = form.save(commit=False)
@@ -150,12 +191,9 @@ def article_create(request):
                 'Article submitted for editor approval.',
             )
 
-            return redirect(
-                'article_detail',
-                article_id=article.id,
-            )
+            return redirect('dashboard')
     else:
-        form = ArticleForm(user=request.user)
+        form = ArticleForm()
 
     return render(
         request,
@@ -170,7 +208,6 @@ def article_create(request):
 @login_required
 @role_required(['journalist', 'editor'])
 def article_update(request, article_id):
-    """Handle article update."""
     article = get_object_or_404(
         Article,
         id=article_id,
@@ -184,13 +221,12 @@ def article_update(request, article_id):
             request,
             'You can only edit your own articles.',
         )
-        return redirect('home')
+        return redirect('dashboard')
 
     if request.method == 'POST':
         form = ArticleForm(
             request.POST,
             instance=article,
-            user=request.user,
         )
 
         if form.is_valid():
@@ -206,12 +242,9 @@ def article_update(request, article_id):
                 'Article updated successfully.',
             )
 
-            return redirect(
-                'article_detail',
-                article_id=article.id,
-            )
+            return redirect('dashboard')
     else:
-        form = ArticleForm(instance=article, user=request.user)
+        form = ArticleForm(instance=article)
 
     return render(
         request,
@@ -224,9 +257,48 @@ def article_update(request, article_id):
 
 
 @login_required
+@role_required(['journalist', 'editor'])
+def article_delete(request, article_id):
+    article = get_object_or_404(
+        Article,
+        id=article_id,
+    )
+
+    if (
+        request.user.role == 'journalist'
+        and article.author != request.user
+    ):
+        messages.error(
+            request,
+            'You can only delete your own articles.',
+        )
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        title = article.title
+        article.delete()
+
+        messages.success(
+            request,
+            f'Article "{title}" was deleted successfully.',
+        )
+
+        return redirect('dashboard')
+
+    return render(
+        request,
+        'newsapp/confirm_delete.html',
+        {
+            'object_name': article.title,
+            'object_type': 'article',
+            'cancel_url': 'dashboard',
+        },
+    )
+
+
+@login_required
 @role_required(['editor'])
 def editor_review(request):
-    """Handle editor review."""
     articles = Article.objects.filter(
         approved=False
     ).select_related(
@@ -246,7 +318,6 @@ def editor_review(request):
 @login_required
 @role_required(['editor'])
 def approve_article(request, article_id):
-    """Approve article."""
     article = get_object_or_404(
         Article.objects.select_related(
             'author',
@@ -265,24 +336,9 @@ def approve_article(request, article_id):
     if article.approved:
         messages.warning(
             request,
-            "This article has already been approved.",
+            'This article has already been approved.',
         )
-        return redirect("editor_review")
-
-    if (
-        article.publisher
-        and not article.publisher.editors.filter(
-            pk=request.user.pk
-        ).exists()
-    ):
-        messages.error(
-            request,
-            (
-                "You cannot approve this article because you are "
-                "not assigned to its publisher."
-            ),
-        )
-        return redirect("editor_review")
+        return redirect('editor_review')
 
     article.approved = True
     article.save(update_fields=['approved'])
@@ -302,19 +358,13 @@ def approve_article(request, article_id):
             request,
             (
                 f'Article approved successfully. '
-                f'{emails_sent} subscriber email(s) were sent, '
-                f'and the approval was logged through the API.'
+                f'{emails_sent} subscriber email(s) were sent.'
             ),
         )
     else:
-        messages.success(
+        messages.warning(
             request,
-            (
-                f'Article approved successfully. '
-                f'{emails_sent} subscriber email(s) were sent. '
-                f'The approval was saved locally because the API '
-                f'POST request could not be completed.'
-            ),
+            'Article approved, but the API log request was unsuccessful.',
         )
 
     return redirect('editor_review')
@@ -323,9 +373,11 @@ def approve_article(request, article_id):
 @login_required
 @role_required(['journalist', 'editor'])
 def newsletter_create(request):
-    """Handle newsletter create."""
     if request.method == 'POST':
-        form = NewsletterForm(request.POST, user=request.user)
+        form = NewsletterForm(
+            request.POST,
+            author=request.user,
+        )
 
         if form.is_valid():
             newsletter = form.save(commit=False)
@@ -338,22 +390,224 @@ def newsletter_create(request):
                 'Newsletter created successfully.',
             )
 
-            return redirect('home')
+            return redirect('dashboard')
     else:
-        form = NewsletterForm(user=request.user)
+        form = NewsletterForm(author=request.user)
 
     return render(
         request,
         'newsapp/newsletter_form.html',
-        {'form': form},
+        {
+            'form': form,
+            'page_title': 'Create Newsletter',
+        },
     )
 
+
+@login_required
+@role_required(['journalist', 'editor'])
+def newsletter_update(request, newsletter_id):
+    newsletter = get_object_or_404(
+        Newsletter,
+        id=newsletter_id,
+    )
+
+    if (
+        request.user.role == 'journalist'
+        and newsletter.author != request.user
+    ):
+        messages.error(
+            request,
+            'You can only edit your own newsletters.',
+        )
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = NewsletterForm(
+            request.POST,
+            instance=newsletter,
+            author=request.user,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Newsletter updated successfully.',
+            )
+
+            return redirect('dashboard')
+    else:
+        form = NewsletterForm(
+            instance=newsletter,
+            author=request.user,
+        )
+
+    return render(
+        request,
+        'newsapp/newsletter_form.html',
+        {
+            'form': form,
+            'page_title': 'Edit Newsletter',
+        },
+    )
+
+
+@login_required
+@role_required(['journalist', 'editor'])
+def newsletter_delete(request, newsletter_id):
+    newsletter = get_object_or_404(
+        Newsletter,
+        id=newsletter_id,
+    )
+
+    if (
+        request.user.role == 'journalist'
+        and newsletter.author != request.user
+    ):
+        messages.error(
+            request,
+            'You can only delete your own newsletters.',
+        )
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        title = newsletter.title
+        newsletter.delete()
+
+        messages.success(
+            request,
+            f'Newsletter "{title}" was deleted successfully.',
+        )
+
+        return redirect('dashboard')
+
+    return render(
+        request,
+        'newsapp/confirm_delete.html',
+        {
+            'object_name': newsletter.title,
+            'object_type': 'newsletter',
+            'cancel_url': 'dashboard',
+        },
+    )
+
+
+@login_required
+@role_required(['editor'])
+def publisher_list(request):
+    publishers = Publisher.objects.all().prefetch_related(
+        'journalists',
+        'editors',
+    ).order_by(
+        'name'
+    )
+
+    return render(
+        request,
+        'newsapp/publisher_list.html',
+        {'publishers': publishers},
+    )
+
+
+@login_required
+@role_required(['editor'])
+def publisher_create(request):
+    if request.method == 'POST':
+        form = PublisherForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Publisher created successfully.',
+            )
+
+            return redirect('publisher_list')
+    else:
+        form = PublisherForm()
+
+    return render(
+        request,
+        'newsapp/publisher_form.html',
+        {
+            'form': form,
+            'page_title': 'Create Publisher',
+        },
+    )
+
+
+@login_required
+@role_required(['editor'])
+def publisher_update(request, publisher_id):
+    publisher = get_object_or_404(
+        Publisher,
+        id=publisher_id,
+    )
+
+    if request.method == 'POST':
+        form = PublisherForm(
+            request.POST,
+            instance=publisher,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Publisher updated successfully.',
+            )
+
+            return redirect('publisher_list')
+    else:
+        form = PublisherForm(instance=publisher)
+
+    return render(
+        request,
+        'newsapp/publisher_form.html',
+        {
+            'form': form,
+            'page_title': 'Edit Publisher',
+        },
+    )
+
+
+@login_required
+@role_required(['editor'])
+def publisher_delete(request, publisher_id):
+    publisher = get_object_or_404(
+        Publisher,
+        id=publisher_id,
+    )
+
+    if request.method == 'POST':
+        name = publisher.name
+        publisher.delete()
+
+        messages.success(
+            request,
+            f'Publisher "{name}" was deleted successfully.',
+        )
+
+        return redirect('publisher_list')
+
+    return render(
+        request,
+        'newsapp/confirm_delete.html',
+        {
+            'object_name': publisher.name,
+            'object_type': 'publisher',
+            'cancel_url': 'publisher_list',
+        },
+    )
 
 
 @login_required
 @role_required(['reader'])
 def manage_subscriptions(request):
-    """Handle manage subscriptions."""
     publishers = Publisher.objects.all().order_by('name')
 
     journalists = CustomUser.objects.filter(
@@ -375,16 +629,13 @@ def manage_subscriptions(request):
 @login_required
 @role_required(['reader'])
 def subscribe_publisher(request, publisher_id):
-    """Subscribe the reader to publisher."""
     publisher = get_object_or_404(
         Publisher,
         id=publisher_id,
     )
 
     if request.method == 'POST':
-        request.user.subscribed_publishers.add(
-            publisher
-        )
+        request.user.subscribed_publishers.add(publisher)
 
         messages.success(
             request,
@@ -397,16 +648,13 @@ def subscribe_publisher(request, publisher_id):
 @login_required
 @role_required(['reader'])
 def unsubscribe_publisher(request, publisher_id):
-    """Unsubscribe the reader from publisher."""
     publisher = get_object_or_404(
         Publisher,
         id=publisher_id,
     )
 
     if request.method == 'POST':
-        request.user.subscribed_publishers.remove(
-            publisher
-        )
+        request.user.subscribed_publishers.remove(publisher)
 
         messages.success(
             request,
@@ -419,7 +667,6 @@ def unsubscribe_publisher(request, publisher_id):
 @login_required
 @role_required(['reader'])
 def subscribe_journalist(request, journalist_id):
-    """Subscribe the reader to journalist."""
     journalist = get_object_or_404(
         CustomUser,
         id=journalist_id,
@@ -427,9 +674,7 @@ def subscribe_journalist(request, journalist_id):
     )
 
     if request.method == 'POST':
-        request.user.subscribed_journalists.add(
-            journalist
-        )
+        request.user.subscribed_journalists.add(journalist)
 
         messages.success(
             request,
@@ -442,7 +687,6 @@ def subscribe_journalist(request, journalist_id):
 @login_required
 @role_required(['reader'])
 def unsubscribe_journalist(request, journalist_id):
-    """Unsubscribe the reader from journalist."""
     journalist = get_object_or_404(
         CustomUser,
         id=journalist_id,
@@ -450,9 +694,7 @@ def unsubscribe_journalist(request, journalist_id):
     )
 
     if request.method == 'POST':
-        request.user.subscribed_journalists.remove(
-            journalist
-        )
+        request.user.subscribed_journalists.remove(journalist)
 
         messages.success(
             request,
@@ -465,20 +707,13 @@ def unsubscribe_journalist(request, journalist_id):
 @login_required
 @role_required(['reader'])
 def subscribed_articles(request):
-    """Handle subscribed articles."""
-    subscribed_publishers = (
-        request.user.subscribed_publishers.all()
-    )
-
-    subscribed_journalists = (
-        request.user.subscribed_journalists.all()
-    )
-
-    from django.db.models import Q
-
     articles = Article.objects.filter(
-        Q(publisher__in=subscribed_publishers)
-        | Q(author__in=subscribed_journalists),
+        Q(
+            publisher__in=request.user.subscribed_publishers.all()
+        )
+        | Q(
+            author__in=request.user.subscribed_journalists.all()
+        ),
         approved=True,
     ).distinct().select_related(
         'author',
@@ -492,5 +727,3 @@ def subscribed_articles(request):
         'newsapp/subscribed_articles.html',
         {'articles': articles},
     )
-
-

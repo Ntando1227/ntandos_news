@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
+
     <title>
         {% block title %}Ntando's News{% endblock %}
     </title>
+
     <link
         rel="stylesheet"
         href="/static/css/style.css"
@@ -24,7 +27,7 @@
                 Ntando's News
             </a>
 
-            <div>
+            <div class="navigation-links">
                 <a href="{% url 'home' %}">
                     Home
                 </a>
@@ -40,13 +43,19 @@
                         </a>
                     {% endif %}
 
-                    {% if user.role == 'journalist' %}
-                        <a href="{% url 'article_create' %}">
-                            Write Article
+                    {% if user.role == 'journalist' or user.role == 'editor' %}
+                        <a href="{% url 'dashboard' %}">
+                            Dashboard
                         </a>
 
                         <a href="{% url 'newsletter_create' %}">
                             Create Newsletter
+                        </a>
+                    {% endif %}
+
+                    {% if user.role == 'journalist' %}
+                        <a href="{% url 'article_create' %}">
+                            Write Article
                         </a>
                     {% endif %}
 
@@ -55,8 +64,8 @@
                             Review Articles
                         </a>
 
-                        <a href="{% url 'newsletter_create' %}">
-                            Create Newsletter
+                        <a href="{% url 'publisher_list' %}">
+                            Publishers
                         </a>
                     {% endif %}
 
@@ -66,6 +75,7 @@
                         class="inline-form"
                     >
                         {% csrf_token %}
+
                         <button type="submit">
                             Logout
                         </button>
@@ -86,7 +96,7 @@
     <main>
         {% if messages %}
             {% for message in messages %}
-                <div class="message">
+                <div class="message {{ message.tags }}">
                     {{ message }}
                 </div>
             {% endfor %}

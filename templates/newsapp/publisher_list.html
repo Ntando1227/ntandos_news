@@ -1,0 +1,76 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}
+Publishers
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Publisher Management</h1>
+
+    <p>
+        Create publishers and assign journalists and editors.
+    </p>
+
+    <a
+        class="button"
+        href="{% url 'publisher_create' %}"
+    >
+        Create Publisher
+    </a>
+</section>
+
+<section>
+    <div class="grid">
+        {% for publisher in publishers %}
+            <article class="card">
+                <h2>{{ publisher.name }}</h2>
+
+                <p>
+                    {{ publisher.description|default:"No description available." }}
+                </p>
+
+                <h3>Journalists</h3>
+
+                <ul>
+                    {% for journalist in publisher.journalists.all %}
+                        <li>{{ journalist.username }}</li>
+                    {% empty %}
+                        <li>No journalists assigned.</li>
+                    {% endfor %}
+                </ul>
+
+                <h3>Editors</h3>
+
+                <ul>
+                    {% for editor in publisher.editors.all %}
+                        <li>{{ editor.username }}</li>
+                    {% empty %}
+                        <li>No editors assigned.</li>
+                    {% endfor %}
+                </ul>
+
+                <div class="action-row">
+                    <a
+                        class="button secondary-button"
+                        href="{% url 'publisher_update' publisher.id %}"
+                    >
+                        Edit
+                    </a>
+
+                    <a
+                        class="button danger-button"
+                        href="{% url 'publisher_delete' publisher.id %}"
+                    >
+                        Delete
+                    </a>
+                </div>
+            </article>
+        {% empty %}
+            <article class="card">
+                <p>No publishers have been created.</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

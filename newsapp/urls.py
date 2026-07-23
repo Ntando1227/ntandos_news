@@ -1,5 +1,4 @@
-"""Define URL routes for the application."""
-from django.contrib.auth import views as auth_views
+﻿from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
@@ -13,12 +12,20 @@ from .views import (
 from .web_views import (
     approve_article,
     article_create,
+    article_delete,
     article_detail,
     article_update,
+    dashboard,
     editor_review,
     home,
     manage_subscriptions,
     newsletter_create,
+    newsletter_delete,
+    newsletter_update,
+    publisher_create,
+    publisher_delete,
+    publisher_list,
+    publisher_update,
     register,
     subscribe_journalist,
     subscribe_publisher,
@@ -83,6 +90,12 @@ urlpatterns = [
     ),
 
     path(
+        'dashboard/',
+        dashboard,
+        name='dashboard',
+    ),
+
+    path(
         'articles/create/',
         article_create,
         name='article_create',
@@ -107,6 +120,12 @@ urlpatterns = [
     ),
 
     path(
+        'articles/<int:article_id>/delete/',
+        article_delete,
+        name='article_delete',
+    ),
+
+    path(
         'editor/review/',
         editor_review,
         name='editor_review',
@@ -122,6 +141,42 @@ urlpatterns = [
         'newsletters/create/',
         newsletter_create,
         name='newsletter_create',
+    ),
+
+    path(
+        'newsletters/<int:newsletter_id>/edit/',
+        newsletter_update,
+        name='newsletter_update',
+    ),
+
+    path(
+        'newsletters/<int:newsletter_id>/delete/',
+        newsletter_delete,
+        name='newsletter_delete',
+    ),
+
+    path(
+        'publishers/',
+        publisher_list,
+        name='publisher_list',
+    ),
+
+    path(
+        'publishers/create/',
+        publisher_create,
+        name='publisher_create',
+    ),
+
+    path(
+        'publishers/<int:publisher_id>/edit/',
+        publisher_update,
+        name='publisher_update',
+    ),
+
+    path(
+        'publishers/<int:publisher_id>/delete/',
+        publisher_delete,
+        name='publisher_delete',
     ),
 
     path(
