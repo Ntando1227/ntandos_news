@@ -510,3 +510,292 @@ table tr:last-child td {
         flex-direction: column;
     }
 }
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes softFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes pulseGlow {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(233, 185, 73, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(233, 185, 73, 0.12);
+    }
+}
+
+.site-navbar {
+    animation: slideDown 0.55s ease-out both;
+}
+
+.site-main {
+    animation: fadeIn 0.55s ease-out both;
+}
+
+.hero,
+.page-header {
+    animation: fadeUp 0.7s ease-out both;
+}
+
+.hero::after,
+.page-header::after {
+    animation: softFloat 6s ease-in-out infinite;
+}
+
+.message-container {
+    animation: fadeUp 0.45s ease-out both;
+}
+
+.section-heading {
+    animation: fadeUp 0.55s ease-out both;
+}
+
+.grid > *,
+.table-container,
+.empty-state,
+.form-container,
+.article-page,
+.content-card {
+    animation: fadeUp 0.65s ease-out both;
+}
+
+.grid > *:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.grid > *:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.grid > *:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.grid > *:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.grid > *:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.grid > *:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 70%;
+    height: 3px;
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--accent),
+            transparent
+        );
+    transition: left 0.45s ease;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card:hover {
+    transform: translateY(-6px) scale(1.01);
+}
+
+.button,
+.btn,
+button {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.button:hover,
+.btn:hover,
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(18, 53, 91, 0.18);
+}
+
+.button:active,
+.btn:active,
+button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-light,
+.text-bg-warning {
+    animation: pulseGlow 3.5s ease-in-out infinite;
+}
+
+.navbar-brand {
+    transition:
+        transform 0.25s ease,
+        letter-spacing 0.25s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.04);
+    letter-spacing: 0.01em;
+}
+
+.navbar-nav .nav-link {
+    position: relative;
+}
+
+.navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.25rem;
+    left: 0.75rem;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.22s ease;
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link:focus::after {
+    transform: scaleX(1);
+}
+
+.status-badge {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.status-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 14px rgba(18, 53, 91, 0.12);
+}
+
+form input:not([type="checkbox"]):not([type="radio"]),
+form select,
+form textarea {
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    transform: translateY(-1px);
+}
+
+table tbody tr {
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.site-footer {
+    animation: fadeIn 0.8s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+        opacity 0.6s ease,
+        transform 0.6s ease;
+}
+
+.scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.button-ripple {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.38);
+    transform: scale(0);
+    animation: rippleEffect 0.6s ease-out;
+}
+
+@keyframes rippleEffect {
+    to {
+        opacity: 0;
+        transform: scale(2.4);
+    }
+}
