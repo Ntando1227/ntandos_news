@@ -1,57 +1,250 @@
 ﻿{% extends 'base.html' %}
 
-{% block title %}Home | Ntando's News{% endblock %}
+{% block title %}
+Home | Ntando's News
+{% endblock %}
 
 {% block content %}
 <section class="hero">
-    <h1>Ntando's News</h1>
-    <p>Independent journalism, trusted publications and curated newsletters.</p>
+    <span class="badge rounded-pill text-bg-warning mb-3">
+        Trusted stories. Informed readers.
+    </span>
+
+    <h1>
+        News that keeps you connected
+    </h1>
+
+    <p>
+        Discover approved articles from independent journalists and
+        trusted publishers, explore newsletters, and build a personalised
+        news feed around the voices you follow.
+    </p>
+
+    <div class="action-row">
+        {% if user.is_authenticated %}
+            {% if user.role == 'reader' %}
+                <a
+                    class="btn btn-light btn-lg fw-semibold"
+                    href="{% url 'subscribed_articles' %}"
+                >
+                    View My News
+                </a>
+
+                <a
+                    class="btn btn-outline-light btn-lg"
+                    href="{% url 'manage_subscriptions' %}"
+                >
+                    Manage Subscriptions
+                </a>
+            {% elif user.role == 'journalist' %}
+                <a
+                    class="btn btn-light btn-lg fw-semibold"
+                    href="{% url 'article_create' %}"
+                >
+                    Create Article
+                </a>
+
+                <a
+                    class="btn btn-outline-light btn-lg"
+                    href="{% url 'dashboard' %}"
+                >
+                    Open Dashboard
+                </a>
+            {% elif user.role == 'editor' %}
+                <a
+                    class="btn btn-light btn-lg fw-semibold"
+                    href="{% url 'editor_review' %}"
+                >
+                    Review Articles
+                </a>
+
+                <a
+                    class="btn btn-outline-light btn-lg"
+                    href="{% url 'dashboard' %}"
+                >
+                    Open Dashboard
+                </a>
+            {% endif %}
+        {% else %}
+            <a
+                class="btn btn-light btn-lg fw-semibold"
+                href="{% url 'register' %}"
+            >
+                Create an Account
+            </a>
+
+            <a
+                class="btn btn-outline-light btn-lg"
+                href="{% url 'login' %}"
+            >
+                Log In
+            </a>
+        {% endif %}
+    </div>
 </section>
 
 <section>
-    <h2>Latest Articles</h2>
+    <div class="section-heading">
+        <div>
+            <p class="text-uppercase text-primary fw-bold small mb-1">
+                Latest coverage
+            </p>
 
-    <div class="grid">
-        {% for article in articles %}
-            <article class="card">
-                <h3>
-                    <a href="{% url 'article_detail' article.id %}">
+            <h2>
+                Recently Approved Articles
+            </h2>
+        </div>
+
+        {% if user.is_authenticated and user.role == 'journalist' %}
+            <a
+                class="button"
+                href="{% url 'article_create' %}"
+            >
+                Create Article
+            </a>
+        {% endif %}
+    </div>
+
+    {% if articles %}
+        <div class="grid">
+            {% for article in articles %}
+                <article class="card h-100">
+                    <div class="card-meta">
+                        <span class="status-badge status-approved">
+                            Approved
+                        </span>
+
+                        <span>
+                            {{ article.created_at|date:"d M Y" }}
+                        </span>
+                    </div>
+
+                    <h3>
                         {{ article.title }}
-                    </a>
-                </h3>
+                    </h3>
 
-                <p>
-                    By {{ article.author.username }}
+                    <p class="mb-2">
+                        By
+                        <strong class="text-dark">
+                            {{ article.author.username }}
+                        </strong>
+                    </p>
+
                     {% if article.publisher %}
-                        for {{ article.publisher.name }}
+                        <p class="small mb-3">
+                            Published by {{ article.publisher.name }}
+                        </p>
                     {% else %}
-                        independently
+                        <p class="small mb-3">
+                            Independent publication
+                        </p>
                     {% endif %}
-                </p>
 
-                <p>{{ article.content|truncatewords:35 }}</p>
-                <small>{{ article.created_at|date:"d M Y H:i" }}</small>
-            </article>
-        {% empty %}
-            <p>No approved articles are available yet.</p>
-        {% endfor %}
-    </div>
+                    <p>
+                        {{ article.content|truncatewords:35 }}
+                    </p>
+
+                    <div class="action-row mt-auto">
+                        <a
+                            class="button"
+                            href="{% url 'article_detail' article.id %}"
+                        >
+                            Read Article
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>
+                No approved articles yet
+            </h3>
+
+            <p>
+                Approved articles will appear here once an editor has
+                reviewed and published them.
+            </p>
+
+            {% if user.is_authenticated and user.role == 'journalist' %}
+                <a
+                    class="button"
+                    href="{% url 'article_create' %}"
+                >
+                    Submit the First Article
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
 </section>
 
 <section>
-    <h2>Newsletters</h2>
+    <div class="section-heading">
+        <div>
+            <p class="text-uppercase text-primary fw-bold small mb-1">
+                Curated collections
+            </p>
 
-    <div class="grid">
-        {% for newsletter in newsletters %}
-            <article class="card">
-                <h3>{{ newsletter.title }}</h3>
-                <p>{{ newsletter.description }}</p>
-                <p>Created by {{ newsletter.author.username }}</p>
-                <p>{{ newsletter.articles.count }} article{{ newsletter.articles.count|pluralize }}</p>
-            </article>
-        {% empty %}
-            <p>No newsletters are available yet.</p>
-        {% endfor %}
+            <h2>
+                Newsletters
+            </h2>
+        </div>
+
+        {% if user.is_authenticated %}
+            {% if user.role == 'journalist' or user.role == 'editor' %}
+                <a
+                    class="button secondary-button"
+                    href="{% url 'newsletter_create' %}"
+                >
+                    Create Newsletter
+                </a>
+            {% endif %}
+        {% endif %}
     </div>
+
+    {% if newsletters %}
+        <div class="grid">
+            {% for newsletter in newsletters %}
+                <article class="card h-100">
+                    <div class="card-meta">
+                        <span>
+                            {{ newsletter.created_at|date:"d M Y" }}
+                        </span>
+
+                        <span>
+                            {{ newsletter.articles.count }}
+                            article{{ newsletter.articles.count|pluralize }}
+                        </span>
+                    </div>
+
+                    <h3>
+                        {{ newsletter.title }}
+                    </h3>
+
+                    <p>
+                        {{ newsletter.description|default:"A curated collection of approved stories." }}
+                    </p>
+
+                    <p class="small mb-0">
+                        Created by
+                        <strong class="text-dark">
+                            {{ newsletter.author.username }}
+                        </strong>
+                    </p>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>
+                No newsletters available
+            </h3>
+
+            <p>
+                Newsletters will appear here when journalists or editors
+                create curated article collections.
+            </p>
+        </div>
+    {% endif %}
 </section>
 {% endblock %}

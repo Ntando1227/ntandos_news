@@ -1,40 +1,56 @@
 ﻿{% extends 'base.html' %}
 
 {% block title %}
-Delete {{ object_type|title }}
+Delete {{ object_type|title }} | Ntando's News
 {% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h1>
-        Delete {{ object_type|title }}
-    </h1>
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-6">
+        <div class="form-container text-center">
+            <div class="display-5 mb-3">
+                ⚠
+            </div>
 
-    <p>
-        Are you sure you want to delete
-        <strong>{{ object_name }}</strong>?
-    </p>
+            <p class="text-uppercase text-danger fw-bold small mb-2">
+                Confirm deletion
+            </p>
 
-    <p>
-        This action cannot be undone.
-    </p>
+            <h1 class="mb-3">
+                Delete {{ object_type|title }}
+            </h1>
 
-    <form method="post">
-        {% csrf_token %}
+            <p class="text-muted">
+                Are you sure you want to permanently delete
+                <strong class="text-dark">
+                    {{ object_name }}
+                </strong>?
+            </p>
 
-        <button
-            type="submit"
-            class="danger-button"
-        >
-            Confirm Delete
-        </button>
+            <div class="alert alert-warning text-start">
+                This action cannot be undone.
+            </div>
 
-        <a
-            class="button secondary-button"
-            href="{% url cancel_url %}"
-        >
-            Cancel
-        </a>
-    </form>
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="action-row justify-content-center">
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                    >
+                        Confirm Delete
+                    </button>
+
+                    <a
+                        class="button secondary-button"
+                        href="{% url cancel_url %}"
+                    >
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

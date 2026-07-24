@@ -1,15 +1,76 @@
 ﻿{% extends 'base.html' %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %}
+{{ page_title }} | Ntando's News
+{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h1>{{ page_title }}</h1>
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="form-container">
+            <div class="mb-4">
+                <p class="text-uppercase text-primary fw-bold small mb-2">
+                    Article management
+                </p>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Article</button>
-    </form>
+                <h1 class="mb-2">
+                    {{ page_title }}
+                </h1>
+
+                <p class="text-muted mb-0">
+                    Complete the fields below. Articles created or edited
+                    by journalists will be submitted for editor approval.
+                </p>
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <span class="helptext">
+                                {{ field.help_text|safe }}
+                            </span>
+                        {% endif %}
+
+                        {% if field.errors %}
+                            <div class="text-danger small mt-2">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="action-row">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Article
+                    </button>
+
+                    <a
+                        class="button secondary-button"
+                        href="{% url 'dashboard' %}"
+                    >
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,36 +1,89 @@
 ﻿{% extends 'base.html' %}
 
-{% block title %}{{ article.title }}{% endblock %}
+{% block title %}
+{{ article.title }} | Ntando's News
+{% endblock %}
 
 {% block content %}
 <article class="article-page">
-    <h1>{{ article.title }}</h1>
-
-    <p>
-        By {{ article.author.username }}
-        {% if article.publisher %}
-            for {{ article.publisher.name }}
+    <div class="card-meta">
+        {% if article.approved %}
+            <span class="status-badge status-approved">
+                Approved
+            </span>
         {% else %}
-            independently
+            <span class="status-badge status-pending">
+                Awaiting Approval
+            </span>
         {% endif %}
-    </p>
 
-    <p>{{ article.created_at|date:"d M Y H:i" }}</p>
+        <span>
+            {{ article.created_at|date:"d M Y, H:i" }}
+        </span>
+    </div>
+
+    <h1>
+        {{ article.title }}
+    </h1>
+
+    <div class="d-flex flex-wrap gap-3 text-muted mb-4">
+        <span>
+            Written by
+            <strong class="text-dark">
+                {{ article.author.username }}
+            </strong>
+        </span>
+
+        {% if article.publisher %}
+            <span>
+                Published by
+                <strong class="text-dark">
+                    {{ article.publisher.name }}
+                </strong>
+            </span>
+        {% else %}
+            <span>
+                Independent publication
+            </span>
+        {% endif %}
+    </div>
 
     {% if not article.approved %}
-        <div class="message">This article is awaiting editor approval.</div>
+        <div class="alert alert-warning">
+            This article is awaiting editor approval and is not yet
+            visible to the public.
+        </div>
     {% endif %}
 
     <div class="article-content">
         {{ article.content|linebreaks }}
     </div>
 
-    {% if user.is_authenticated %}
-        {% if user.role == 'editor' or article.author == user %}
-            <a class="button" href="{% url 'article_update' article.id %}">
-                Edit Article
-            </a>
+    <div class="action-row">
+        <a
+            class="button secondary-button"
+            href="{% url 'home' %}"
+        >
+            Back to Home
+        </a>
+
+        {% if user.is_authenticated %}
+            {% if user.role == 'editor' or article.author == user %}
+                <a
+                    class="button"
+                    href="{% url 'article_update' article.id %}"
+                >
+                    Edit Article
+                </a>
+
+                <a
+                    class="button danger-button"
+                    href="{% url 'article_delete' article.id %}"
+                >
+                    Delete Article
+                </a>
+            {% endif %}
         {% endif %}
-    {% endif %}
+    </div>
 </article>
 {% endblock %}
