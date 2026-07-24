@@ -1,76 +1,136 @@
 ﻿{% extends 'base.html' %}
 
 {% block title %}
-Publishers
+Publishers | Ntando's News
 {% endblock %}
 
 {% block content %}
-<section class="hero">
-    <h1>Publisher Management</h1>
-
-    <p>
-        Create publishers and assign journalists and editors.
+<section class="page-header">
+    <p class="text-uppercase fw-bold small mb-2">
+        Organisation management
     </p>
 
-    <a
-        class="button"
-        href="{% url 'publisher_create' %}"
-    >
-        Create Publisher
-    </a>
+    <h1>
+        Publishers
+    </h1>
+
+    <p>
+        Create publisher profiles and assign journalists and editors
+        to each organisation.
+    </p>
+
+    <div class="action-row">
+        <a
+            class="btn btn-light btn-lg fw-semibold"
+            href="{% url 'publisher_create' %}"
+        >
+            Create Publisher
+        </a>
+
+        <a
+            class="btn btn-outline-light btn-lg"
+            href="{% url 'dashboard' %}"
+        >
+            Back to Dashboard
+        </a>
+    </div>
 </section>
 
-<section>
+{% if publishers %}
     <div class="grid">
         {% for publisher in publishers %}
             <article class="card">
-                <h2>{{ publisher.name }}</h2>
+                <div class="card-meta">
+                    <span>
+                        {{ publisher.journalists.count }}
+                        journalist{{ publisher.journalists.count|pluralize }}
+                    </span>
+
+                    <span>
+                        {{ publisher.editors.count }}
+                        editor{{ publisher.editors.count|pluralize }}
+                    </span>
+                </div>
+
+                <h2>
+                    {{ publisher.name }}
+                </h2>
 
                 <p>
-                    {{ publisher.description|default:"No description available." }}
+                    {{ publisher.description|default:"No publisher description has been added." }}
                 </p>
 
-                <h3>Journalists</h3>
+                <div class="mt-4">
+                    <h3 class="h6 text-uppercase text-primary">
+                        Journalists
+                    </h3>
 
-                <ul>
-                    {% for journalist in publisher.journalists.all %}
-                        <li>{{ journalist.username }}</li>
-                    {% empty %}
-                        <li>No journalists assigned.</li>
-                    {% endfor %}
-                </ul>
+                    {% if publisher.journalists.all %}
+                        <ul class="mb-3">
+                            {% for journalist in publisher.journalists.all %}
+                                <li>
+                                    {{ journalist.username }}
+                                </li>
+                            {% empty %}
+                                <li class="text-muted">
+                                    No journalists assigned.
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
 
-                <h3>Editors</h3>
+                <div>
+                    <h3 class="h6 text-uppercase text-primary">
+                        Editors
+                    </h3>
 
-                <ul>
-                    {% for editor in publisher.editors.all %}
-                        <li>{{ editor.username }}</li>
-                    {% empty %}
-                        <li>No editors assigned.</li>
-                    {% endfor %}
-                </ul>
+                    <ul class="mb-3">
+                        {% for editor in publisher.editors.all %}
+                            <li>
+                                {{ editor.username }}
+                            </li>
+                        {% empty %}
+                            <li class="text-muted">
+                                No editors assigned.
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
                 <div class="action-row">
                     <a
                         class="button secondary-button"
                         href="{% url 'publisher_update' publisher.id %}"
                     >
-                        Edit
+                        Edit Publisher
                     </a>
 
                     <a
                         class="button danger-button"
                         href="{% url 'publisher_delete' publisher.id %}"
                     >
-                        Delete
+                        Delete Publisher
                     </a>
                 </div>
             </article>
-        {% empty %}
-            <article class="card">
-                <p>No publishers have been created.</p>
-            </article>
         {% endfor %}
     </div>
-</section>
+{% else %}
+    <div class="empty-state">
+        <h2>No publishers created</h2>
+
+        <p>
+            Create the first publisher profile and assign the relevant
+            journalists and editors.
+        </p>
+
+        <a
+            class="button"
+            href="{% url 'publisher_create' %}"
+        >
+            Create Publisher
+        </a>
+    </div>
+{% endif %}
 {% endblock %}

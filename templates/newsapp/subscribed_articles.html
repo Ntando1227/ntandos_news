@@ -1,70 +1,101 @@
 ﻿{% extends 'base.html' %}
 
 {% block title %}
-My News
+My News | Ntando's News
 {% endblock %}
 
 {% block content %}
-<section class="hero">
-    <h1>My News</h1>
-    <p>
-        Approved articles from the publishers and journalists
-        you follow.
+<section class="page-header">
+    <p class="text-uppercase fw-bold small mb-2">
+        Personalised coverage
     </p>
 
-    <a
-        class="button"
-        href="{% url 'manage_subscriptions' %}"
-    >
-        Manage Subscriptions
-    </a>
+    <h1>
+        My News
+    </h1>
+
+    <p>
+        Approved articles from the publishers and journalists you follow.
+    </p>
+
+    <div class="action-row">
+        <a
+            class="btn btn-light btn-lg fw-semibold"
+            href="{% url 'manage_subscriptions' %}"
+        >
+            Manage Subscriptions
+        </a>
+
+        <a
+            class="btn btn-outline-light btn-lg"
+            href="{% url 'home' %}"
+        >
+            Browse All News
+        </a>
+    </div>
 </section>
 
-<section>
+{% if articles %}
     <div class="grid">
         {% for article in articles %}
             <article class="card">
+                <div class="card-meta">
+                    <span class="status-badge status-approved">
+                        Approved
+                    </span>
+
+                    <span>
+                        {{ article.created_at|date:"d M Y" }}
+                    </span>
+                </div>
+
                 <h2>
-                    <a href="{% url 'article_detail' article.id %}">
-                        {{ article.title }}
-                    </a>
+                    {{ article.title }}
                 </h2>
 
                 <p>
-                    By {{ article.author.username }}
-
-                    {% if article.publisher %}
-                        for {{ article.publisher.name }}
-                    {% else %}
-                        independently
-                    {% endif %}
+                    By
+                    <strong class="text-dark">
+                        {{ article.author.username }}
+                    </strong>
                 </p>
+
+                {% if article.publisher %}
+                    <p class="small">
+                        Published by {{ article.publisher.name }}
+                    </p>
+                {% endif %}
 
                 <p>
                     {{ article.content|truncatewords:40 }}
                 </p>
 
-                <small>
-                    {{ article.created_at|date:"d M Y H:i" }}
-                </small>
-            </article>
-        {% empty %}
-            <article class="card">
-                <h2>No subscribed articles yet</h2>
-
-                <p>
-                    Subscribe to a publisher or journalist to
-                    build your personalised news feed.
-                </p>
-
-                <a
-                    class="button"
-                    href="{% url 'manage_subscriptions' %}"
-                >
-                    Browse Subscriptions
-                </a>
+                <div class="action-row">
+                    <a
+                        class="button"
+                        href="{% url 'article_detail' article.id %}"
+                    >
+                        Read Article
+                    </a>
+                </div>
             </article>
         {% endfor %}
     </div>
-</section>
+{% else %}
+    <div class="empty-state">
+        <h2>Your personalised feed is empty</h2>
+
+        <p>
+            Subscribe to a publisher or journalist to begin receiving
+            approved articles in this feed.
+        </p>
+
+        <a
+            class="button"
+            href="{% url 'manage_subscriptions' %}"
+        >
+            Browse Subscriptions
+        </a>
+    </div>
+{% endif %}
 {% endblock %}

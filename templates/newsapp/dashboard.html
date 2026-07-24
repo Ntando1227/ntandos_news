@@ -5,7 +5,11 @@ Dashboard | Ntando's News
 {% endblock %}
 
 {% block content %}
-<section class="hero">
+<section class="page-header">
+    <p class="text-uppercase fw-bold small mb-2">
+        Content management
+    </p>
+
     <h1>
         {% if user.role == 'journalist' %}
             Journalist Dashboard
@@ -15,13 +19,13 @@ Dashboard | Ntando's News
     </h1>
 
     <p>
-        Manage articles and newsletters from one location.
+        Manage articles and newsletters from one central workspace.
     </p>
 
     <div class="action-row">
         {% if user.role == 'journalist' %}
             <a
-                class="button"
+                class="btn btn-light btn-lg fw-semibold"
                 href="{% url 'article_create' %}"
             >
                 Create Article
@@ -29,114 +33,226 @@ Dashboard | Ntando's News
         {% endif %}
 
         <a
-            class="button"
+            class="btn btn-outline-light btn-lg"
             href="{% url 'newsletter_create' %}"
         >
             Create Newsletter
         </a>
+
+        {% if user.role == 'editor' %}
+            <a
+                class="btn btn-outline-light btn-lg"
+                href="{% url 'editor_review' %}"
+            >
+                Review Pending Articles
+            </a>
+        {% endif %}
     </div>
 </section>
 
 <section>
-    <h2>Articles</h2>
+    <div class="section-heading">
+        <div>
+            <p class="text-uppercase text-primary fw-bold small mb-1">
+                Article workspace
+            </p>
 
-    <div class="grid">
-        {% for article in articles %}
-            <article class="card">
-                <h3>{{ article.title }}</h3>
-
-                <p>
-                    Author: {{ article.author.username }}
-                </p>
-
-                <p>
-                    Status:
-                    {% if article.approved %}
-                        <strong>Approved</strong>
-                    {% else %}
-                        <strong>Awaiting approval</strong>
-                    {% endif %}
-                </p>
-
-                {% if article.publisher %}
-                    <p>
-                        Publisher: {{ article.publisher.name }}
-                    </p>
+            <h2>
+                {% if user.role == 'journalist' %}
+                    My Articles
+                {% else %}
+                    All Articles
                 {% endif %}
-
-                <div class="action-row">
-                    <a
-                        class="button"
-                        href="{% url 'article_detail' article.id %}"
-                    >
-                        Read Article
-                    </a>
-
-                    <a
-                        class="button secondary-button"
-                        href="{% url 'article_update' article.id %}"
-                    >
-                        Edit
-                    </a>
-
-                    <a
-                        class="button danger-button"
-                        href="{% url 'article_delete' article.id %}"
-                    >
-                        Delete
-                    </a>
-                </div>
-            </article>
-        {% empty %}
-            <article class="card">
-                <p>No articles are available.</p>
-            </article>
-        {% endfor %}
+            </h2>
+        </div>
     </div>
+
+    {% if articles %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Article</th>
+                        <th>Author</th>
+                        <th>Publisher</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for article in articles %}
+                        <tr>
+                            <td>
+                                <strong>
+                                    {{ article.title }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ article.author.username }}
+                            </td>
+
+                            <td>
+                                {% if article.publisher %}
+                                    {{ article.publisher.name }}
+                                {% else %}
+                                    Independent
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if article.approved %}
+                                    <span class="status-badge status-approved">
+                                        Approved
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge status-pending">
+                                        Pending
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ article.created_at|date:"d M Y" }}
+                            </td>
+
+                            <td>
+                                <div class="action-row mt-0">
+                                    <a
+                                        class="button"
+                                        href="{% url 'article_detail' article.id %}"
+                                    >
+                                        Read
+                                    </a>
+
+                                    <a
+                                        class="button secondary-button"
+                                        href="{% url 'article_update' article.id %}"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    <a
+                                        class="button danger-button"
+                                        href="{% url 'article_delete' article.id %}"
+                                    >
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No articles available</h3>
+
+            <p>
+                {% if user.role == 'journalist' %}
+                    Create your first article to begin building your
+                    publication history.
+                {% else %}
+                    Articles will appear here as journalists submit them.
+                {% endif %}
+            </p>
+
+            {% if user.role == 'journalist' %}
+                <a
+                    class="button"
+                    href="{% url 'article_create' %}"
+                >
+                    Create Article
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
 </section>
 
 <section>
-    <h2>Newsletters</h2>
+    <div class="section-heading">
+        <div>
+            <p class="text-uppercase text-primary fw-bold small mb-1">
+                Newsletter workspace
+            </p>
 
-    <div class="grid">
-        {% for newsletter in newsletters %}
-            <article class="card">
-                <h3>{{ newsletter.title }}</h3>
-
-                <p>
-                    Author: {{ newsletter.author.username }}
-                </p>
-
-                <p>
-                    {{ newsletter.description }}
-                </p>
-
-                <p>
-                    {{ newsletter.articles.count }}
-                    article{{ newsletter.articles.count|pluralize }}
-                </p>
-
-                <div class="action-row">
-                    <a
-                        class="button secondary-button"
-                        href="{% url 'newsletter_update' newsletter.id %}"
-                    >
-                        Edit
-                    </a>
-
-                    <a
-                        class="button danger-button"
-                        href="{% url 'newsletter_delete' newsletter.id %}"
-                    >
-                        Delete
-                    </a>
-                </div>
-            </article>
-        {% empty %}
-            <article class="card">
-                <p>No newsletters are available.</p>
-            </article>
-        {% endfor %}
+            <h2>
+                {% if user.role == 'journalist' %}
+                    My Newsletters
+                {% else %}
+                    All Newsletters
+                {% endif %}
+            </h2>
+        </div>
     </div>
+
+    {% if newsletters %}
+        <div class="grid">
+            {% for newsletter in newsletters %}
+                <article class="card">
+                    <div class="card-meta">
+                        <span>
+                            {{ newsletter.created_at|date:"d M Y" }}
+                        </span>
+
+                        <span>
+                            {{ newsletter.articles.count }}
+                            article{{ newsletter.articles.count|pluralize }}
+                        </span>
+                    </div>
+
+                    <h3>
+                        {{ newsletter.title }}
+                    </h3>
+
+                    <p>
+                        {{ newsletter.description|default:"No description provided." }}
+                    </p>
+
+                    <p class="small">
+                        Created by
+                        <strong class="text-dark">
+                            {{ newsletter.author.username }}
+                        </strong>
+                    </p>
+
+                    <div class="action-row">
+                        <a
+                            class="button secondary-button"
+                            href="{% url 'newsletter_update' newsletter.id %}"
+                        >
+                            Edit Newsletter
+                        </a>
+
+                        <a
+                            class="button danger-button"
+                            href="{% url 'newsletter_delete' newsletter.id %}"
+                        >
+                            Delete Newsletter
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No newsletters available</h3>
+
+            <p>
+                Create a newsletter to curate approved articles into
+                a focused collection.
+            </p>
+
+            <a
+                class="button"
+                href="{% url 'newsletter_create' %}"
+            >
+                Create Newsletter
+            </a>
+        </div>
+    {% endif %}
 </section>
 {% endblock %}
