@@ -1,10 +1,48 @@
 ﻿services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ntandos_news_db
+      MARIADB_USER: ntando_news_user
+      MARIADB_PASSWORD: docker_database_password
+      MARIADB_ROOT_PASSWORD: docker_root_password
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD
+        - healthcheck.sh
+        - --connect
+        - --innodb_initialized
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    environment:
+      DJANGO_SECRET_KEY: docker-development-secret-key
+      DJANGO_DEBUG: "True"
+      DJANGO_ALLOWED_HOSTS: 127.0.0.1,localhost,0.0.0.0
+      DB_ENGINE: mysql
+      DB_NAME: ntandos_news_db
+      DB_USER: ntando_news_user
+      DB_PASSWORD: docker_database_password
+      DB_HOST: db
+      DB_PORT: "3306"
+      EMAIL_BACKEND: django.core.mail.backends.console.EmailBackend
+      DEFAULT_FROM_EMAIL: ntandosnews@example.com
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mariadb_data:
