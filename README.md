@@ -117,3 +117,13 @@ The generated documentation is available at:
 ## Public repository
 
 https://github.com/Ntando1227/ntandos_news
+
+## Docker verification
+
+The Docker Compose configuration was tested in GitHub Codespaces.
+
+Both services started successfully:
+
+- MariaDB database container reported healthy.
+- Django web container started and exposed port 8000.
+- The web application was accessible through the Codespaces forwarded port.
