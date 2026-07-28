@@ -22,9 +22,12 @@ from .views import (
 
 
 def role_required(allowed_roles):
+    """Create a decorator that restricts a view to selected user roles."""
     def decorator(view_function):
+        """Provide the application behaviour implemented by decorator."""
         @wraps(view_function)
         def wrapped_view(request, *args, **kwargs):
+            """Provide the application behaviour implemented by wrapped_view."""
             if not request.user.is_authenticated:
                 return redirect('login')
 
@@ -43,6 +46,7 @@ def role_required(allowed_roles):
 
 
 def home(request):
+    """Display approved articles and newsletters on the homepage."""
     articles = Article.objects.filter(
         approved=True
     ).select_related(
@@ -71,6 +75,7 @@ def home(request):
 
 
 def register(request):
+    """Register and authenticate a new user."""
     if request.user.is_authenticated:
         return redirect('home')
 
@@ -100,6 +105,7 @@ def register(request):
 @login_required
 @role_required(['journalist', 'editor'])
 def dashboard(request):
+    """Display content-management tools for journalists and editors."""
     if request.user.role == 'journalist':
         articles = Article.objects.filter(
             author=request.user
@@ -143,6 +149,7 @@ def dashboard(request):
 
 
 def article_detail(request, article_id):
+    """Display an article when the current user has permission."""
     article = get_object_or_404(
         Article.objects.select_related(
             'author',
@@ -177,6 +184,7 @@ def article_detail(request, article_id):
 @login_required
 @role_required(['journalist'])
 def article_create(request):
+    """Allow a journalist to create an article."""
     if request.method == 'POST':
         form = ArticleForm(request.POST)
 
@@ -208,6 +216,7 @@ def article_create(request):
 @login_required
 @role_required(['journalist', 'editor'])
 def article_update(request, article_id):
+    """Allow an authorised user to update an article."""
     article = get_object_or_404(
         Article,
         id=article_id,
@@ -259,6 +268,7 @@ def article_update(request, article_id):
 @login_required
 @role_required(['journalist', 'editor'])
 def article_delete(request, article_id):
+    """Allow an authorised user to delete an article."""
     article = get_object_or_404(
         Article,
         id=article_id,
@@ -299,6 +309,7 @@ def article_delete(request, article_id):
 @login_required
 @role_required(['editor'])
 def editor_review(request):
+    """Display articles awaiting editor review."""
     articles = Article.objects.filter(
         approved=False
     ).select_related(
@@ -318,6 +329,7 @@ def editor_review(request):
 @login_required
 @role_required(['editor'])
 def approve_article(request, article_id):
+    """Approve an article and notify subscribed readers."""
     article = get_object_or_404(
         Article.objects.select_related(
             'author',
@@ -373,6 +385,7 @@ def approve_article(request, article_id):
 @login_required
 @role_required(['journalist', 'editor'])
 def newsletter_create(request):
+    """Allow a journalist or editor to create a newsletter."""
     if request.method == 'POST':
         form = NewsletterForm(
             request.POST,
@@ -407,6 +420,7 @@ def newsletter_create(request):
 @login_required
 @role_required(['journalist', 'editor'])
 def newsletter_update(request, newsletter_id):
+    """Allow an authorised user to update a newsletter."""
     newsletter = get_object_or_404(
         Newsletter,
         id=newsletter_id,
@@ -457,6 +471,7 @@ def newsletter_update(request, newsletter_id):
 @login_required
 @role_required(['journalist', 'editor'])
 def newsletter_delete(request, newsletter_id):
+    """Allow an authorised user to delete a newsletter."""
     newsletter = get_object_or_404(
         Newsletter,
         id=newsletter_id,
@@ -497,6 +512,7 @@ def newsletter_delete(request, newsletter_id):
 @login_required
 @role_required(['editor'])
 def publisher_list(request):
+    """Display all publishers and assigned users."""
     publishers = Publisher.objects.all().prefetch_related(
         'journalists',
         'editors',
@@ -514,6 +530,7 @@ def publisher_list(request):
 @login_required
 @role_required(['editor'])
 def publisher_create(request):
+    """Allow an editor to create a publisher."""
     if request.method == 'POST':
         form = PublisherForm(request.POST)
 
@@ -542,6 +559,7 @@ def publisher_create(request):
 @login_required
 @role_required(['editor'])
 def publisher_update(request, publisher_id):
+    """Allow an editor to update a publisher."""
     publisher = get_object_or_404(
         Publisher,
         id=publisher_id,
@@ -578,6 +596,7 @@ def publisher_update(request, publisher_id):
 @login_required
 @role_required(['editor'])
 def publisher_delete(request, publisher_id):
+    """Allow an editor to delete a publisher."""
     publisher = get_object_or_404(
         Publisher,
         id=publisher_id,
@@ -608,6 +627,7 @@ def publisher_delete(request, publisher_id):
 @login_required
 @role_required(['reader'])
 def manage_subscriptions(request):
+    """Display available publisher and journalist subscriptions."""
     publishers = Publisher.objects.all().order_by('name')
 
     journalists = CustomUser.objects.filter(
@@ -629,6 +649,7 @@ def manage_subscriptions(request):
 @login_required
 @role_required(['reader'])
 def subscribe_publisher(request, publisher_id):
+    """Subscribe the current reader to a publisher."""
     publisher = get_object_or_404(
         Publisher,
         id=publisher_id,
@@ -648,6 +669,7 @@ def subscribe_publisher(request, publisher_id):
 @login_required
 @role_required(['reader'])
 def unsubscribe_publisher(request, publisher_id):
+    """Remove a publisher subscription."""
     publisher = get_object_or_404(
         Publisher,
         id=publisher_id,
@@ -667,6 +689,7 @@ def unsubscribe_publisher(request, publisher_id):
 @login_required
 @role_required(['reader'])
 def subscribe_journalist(request, journalist_id):
+    """Subscribe the current reader to a journalist."""
     journalist = get_object_or_404(
         CustomUser,
         id=journalist_id,
@@ -687,6 +710,7 @@ def subscribe_journalist(request, journalist_id):
 @login_required
 @role_required(['reader'])
 def unsubscribe_journalist(request, journalist_id):
+    """Remove a journalist subscription."""
     journalist = get_object_or_404(
         CustomUser,
         id=journalist_id,
@@ -707,6 +731,7 @@ def unsubscribe_journalist(request, journalist_id):
 @login_required
 @role_required(['reader'])
 def subscribed_articles(request):
+    """Display approved articles from followed sources."""
     articles = Article.objects.filter(
         Q(
             publisher__in=request.user.subscribed_publishers.all()

@@ -95,26 +95,22 @@ Define database models for the news application.</p>
 </section>
 <section id="module-newsapp.forms">
 <span id="forms"></span><h2>Forms<a class="headerlink" href="#module-newsapp.forms" title="Link to this heading">¶</a></h2>
-<p>Forms used by the Ntando’s News web application.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="newsapp.forms.RegistrationForm">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">newsapp.forms.</span></span><span class="sig-name descname"><span class="pre">RegistrationForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/forms.html#RegistrationForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.forms.RegistrationForm" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">UserCreationForm</span></code></p>
-<p>Register a user with an email address and application role.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="newsapp.forms.ArticleForm">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">newsapp.forms.</span></span><span class="sig-name descname"><span class="pre">ArticleForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/forms.html#ArticleForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.forms.ArticleForm" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">newsapp.forms.</span></span><span class="sig-name descname"><span class="pre">ArticleForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">ErrorList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/forms.html#ArticleForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.forms.ArticleForm" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
-<p>Create or update an article using permitted publishers.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="newsapp.forms.NewsletterForm">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">newsapp.forms.</span></span><span class="sig-name descname"><span class="pre">NewsletterForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/forms.html#NewsletterForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.forms.NewsletterForm" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">newsapp.forms.</span></span><span class="sig-name descname"><span class="pre">NewsletterForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/forms.html#NewsletterForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.forms.NewsletterForm" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
-<p>Create or update a newsletter containing approved articles.</p>
 </dd></dl>
 
 </section>
@@ -153,15 +149,12 @@ Define database models for the news application.</p>
 <section id="module-newsapp.web_views">
 <span id="web-views"></span><h2>Web Views<a class="headerlink" href="#module-newsapp.web_views" title="Link to this heading">¶</a></h2>
 <p>Web views for the Ntando’s News application.</p>
-<p>The views in this module support registration, article management,
-editor review, newsletters, and reader subscriptions.
-Define template-based views for the news application.</p>
 <section id="home-view">
 <h3>Home View<a class="headerlink" href="#home-view" title="Link to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="newsapp.web_views.home">
 <span class="sig-prename descclassname"><span class="pre">newsapp.web_views.</span></span><span class="sig-name descname"><span class="pre">home</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/web_views.html#home"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.web_views.home" title="Link to this definition">¶</a></dt>
-<dd><p>Handle home.</p>
+<dd><p>Display approved articles and newsletters on the homepage.</p>
 </dd></dl>
 
 </section>
@@ -170,7 +163,7 @@ Define template-based views for the news application.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="newsapp.web_views.register">
 <span class="sig-prename descclassname"><span class="pre">newsapp.web_views.</span></span><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/web_views.html#register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.web_views.register" title="Link to this definition">¶</a></dt>
-<dd><p>Handle register.</p>
+<dd><p>Register and authenticate a new user.</p>
 </dd></dl>
 
 </section>
@@ -179,7 +172,7 @@ Define template-based views for the news application.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="newsapp.web_views.article_create">
 <span class="sig-prename descclassname"><span class="pre">newsapp.web_views.</span></span><span class="sig-name descname"><span class="pre">article_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/web_views.html#article_create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.web_views.article_create" title="Link to this definition">¶</a></dt>
-<dd><p>Handle article create.</p>
+<dd><p>Allow a journalist to create an article.</p>
 </dd></dl>
 
 </section>
@@ -188,7 +181,7 @@ Define template-based views for the news application.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="newsapp.web_views.article_detail">
 <span class="sig-prename descclassname"><span class="pre">newsapp.web_views.</span></span><span class="sig-name descname"><span class="pre">article_detail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">article_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/web_views.html#article_detail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.web_views.article_detail" title="Link to this definition">¶</a></dt>
-<dd><p>Handle article detail.</p>
+<dd><p>Display an article when the current user has permission.</p>
 </dd></dl>
 
 </section>
@@ -197,7 +190,7 @@ Define template-based views for the news application.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="newsapp.web_views.editor_review">
 <span class="sig-prename descclassname"><span class="pre">newsapp.web_views.</span></span><span class="sig-name descname"><span class="pre">editor_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/web_views.html#editor_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.web_views.editor_review" title="Link to this definition">¶</a></dt>
-<dd><p>Handle editor review.</p>
+<dd><p>Display articles awaiting editor review.</p>
 </dd></dl>
 
 </section>
@@ -206,7 +199,7 @@ Define template-based views for the news application.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="newsapp.web_views.approve_article">
 <span class="sig-prename descclassname"><span class="pre">newsapp.web_views.</span></span><span class="sig-name descname"><span class="pre">approve_article</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">article_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/web_views.html#approve_article"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.web_views.approve_article" title="Link to this definition">¶</a></dt>
-<dd><p>Approve article.</p>
+<dd><p>Approve an article and notify subscribed readers.</p>
 </dd></dl>
 
 </section>
@@ -215,7 +208,7 @@ Define template-based views for the news application.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="newsapp.web_views.manage_subscriptions">
 <span class="sig-prename descclassname"><span class="pre">newsapp.web_views.</span></span><span class="sig-name descname"><span class="pre">manage_subscriptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/web_views.html#manage_subscriptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.web_views.manage_subscriptions" title="Link to this definition">¶</a></dt>
-<dd><p>Handle manage subscriptions.</p>
+<dd><p>Display available publisher and journalist subscriptions.</p>
 </dd></dl>
 
 </section>
@@ -224,7 +217,7 @@ Define template-based views for the news application.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="newsapp.web_views.subscribed_articles">
 <span class="sig-prename descclassname"><span class="pre">newsapp.web_views.</span></span><span class="sig-name descname"><span class="pre">subscribed_articles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newsapp/web_views.html#subscribed_articles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newsapp.web_views.subscribed_articles" title="Link to this definition">¶</a></dt>
-<dd><p>Handle subscribed articles.</p>
+<dd><p>Display approved articles from followed sources.</p>
 </dd></dl>
 
 </section>
@@ -233,10 +226,7 @@ Define template-based views for the news application.</p>
 <h2>REST API<a class="headerlink" href="#rest-api" title="Link to this heading">¶</a></h2>
 <p>The REST API module provides endpoints for articles, newsletters,
 publishers, users, subscriptions, and approved article records.</p>
-<p id="module-newsapp.views">REST API views for articles, newsletters, publishers, and users.</p>
-<p>This module also handles editor approval, subscriber email notifications,
-and approved article logging.
-Define REST API views and supporting functions.</p>
+<p id="module-newsapp.views">REST API views for the Ntando’s News application.</p>
 </section>
 <section id="permissions">
 <h2>Permissions<a class="headerlink" href="#permissions" title="Link to this heading">¶</a></h2>

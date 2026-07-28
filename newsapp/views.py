@@ -33,6 +33,7 @@ from .serializers import (
 
 
 def get_article_subscriber_emails(article):
+    """Return email addresses for readers subscribed to an article source."""
     publisher_subscribers = CustomUser.objects.none()
 
     if article.publisher:
@@ -61,6 +62,7 @@ def get_article_subscriber_emails(article):
 
 
 def email_approved_article(article):
+    """Email an approved article to subscribed readers."""
     recipient_list = get_article_subscriber_emails(article)
 
     if not recipient_list:
@@ -89,6 +91,7 @@ def email_approved_article(article):
 
 
 def post_article_to_approved_endpoint(request, article):
+    """Send an approved article to the approval API endpoint."""
     publisher_name = (
         article.publisher.name
         if article.publisher
@@ -131,10 +134,12 @@ def post_article_to_approved_endpoint(request, article):
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
+    """Provide REST API operations for articles."""
     serializer_class = ArticleSerializer
     permission_classes = [ArticleRolePermission]
 
     def get_queryset(self):
+        """Provide the application behaviour implemented by get_queryset."""
         user = self.request.user
 
         if not user.is_authenticated:
@@ -168,6 +173,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
+        """Provide the application behaviour implemented by perform_create."""
         serializer.save(
             author=self.request.user,
             approved=False,
@@ -180,6 +186,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         url_path='subscribed',
     )
     def subscribed(self, request):
+        """Provide the application behaviour implemented by subscribed."""
         if request.user.role != 'reader':
             return Response(
                 {
@@ -222,6 +229,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         url_path='approve',
     )
     def approve(self, request, pk=None):
+        """Provide the application behaviour implemented by approve."""
         article = self.get_object()
 
         if article.approved:
@@ -261,10 +269,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
 
 class NewsletterViewSet(viewsets.ModelViewSet):
+    """Provide REST API operations for newsletters."""
     serializer_class = NewsletterSerializer
     permission_classes = [NewsletterRolePermission]
 
     def get_queryset(self):
+        """Provide the application behaviour implemented by get_queryset."""
         user = self.request.user
 
         queryset = Newsletter.objects.all().select_related(
@@ -282,10 +292,12 @@ class NewsletterViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
+        """Provide the application behaviour implemented by perform_create."""
         serializer.save(author=self.request.user)
 
 
 class PublisherViewSet(viewsets.ReadOnlyModelViewSet):
+    """Provide read-only REST API access to publishers."""
     queryset = Publisher.objects.all().prefetch_related(
         'editors',
         'journalists',
@@ -294,12 +306,14 @@ class PublisherViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """Provide authenticated REST API access to users."""
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
 
 class ApprovedArticleLogViewSet(viewsets.ModelViewSet):
+    """Provide REST API access to article approval records."""
     queryset = ApprovedArticleLog.objects.all().order_by(
         '-approved_at'
     )
@@ -314,6 +328,7 @@ class ApprovedArticleLogViewSet(viewsets.ModelViewSet):
     ]
 
     def create(self, request, *args, **kwargs):
+        """Provide the application behaviour implemented by create."""
         article_id = request.data.get('article')
 
         try:
